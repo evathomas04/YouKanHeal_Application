@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "831323192062",
+    "project_id": "youkanheal-mainproject",
+    "storage_bucket": "youkanheal-mainproject.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:831323192062:android:3c489c7c38dc81f27043af",
+        "android_client_info": {
+          "package_name": "com.example.youkanheal_mainproject"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDutSVXkKEVPb2MAGYLhx5QXh1d712uY4U"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
