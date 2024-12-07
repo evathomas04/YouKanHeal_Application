@@ -9,13 +9,20 @@ class ContactPage extends StatelessWidget {
     final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
     return Scaffold(
+<<<<<<< HEAD
       key: _scaffoldKey,
       drawer: const AppDrawer(), // Use the reusable drawer
+=======
+>>>>>>> b0091a2a52994186a7f43ebb007db3863b4b7c4c
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.menu),
           onPressed: () {
+<<<<<<< HEAD
             _scaffoldKey.currentState?.openDrawer(); // Opens the drawer
+=======
+            Scaffold.of(context).openDrawer(); // Opens the drawer
+>>>>>>> b0091a2a52994186a7f43ebb007db3863b4b7c4c
           },
         ),
         title: Center(
@@ -26,6 +33,7 @@ class ContactPage extends StatelessWidget {
           ),
         ),
       ),
+<<<<<<< HEAD
       body: Center(
         child: Card(
           elevation: 5,
@@ -74,6 +82,9 @@ class ContactPage extends StatelessWidget {
           ),
         ),
       ),
+=======
+      body: const Center(child: Text('Contact Page content')),
+>>>>>>> b0091a2a52994186a7f43ebb007db3863b4b7c4c
     );
   }
 }

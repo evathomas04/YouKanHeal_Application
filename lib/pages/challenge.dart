@@ -9,23 +9,35 @@ class ChallengePage extends StatelessWidget {
     final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
     return Scaffold(
+<<<<<<< HEAD
       key: _scaffoldKey,
       drawer: const AppDrawer(),
+=======
+>>>>>>> b0091a2a52994186a7f43ebb007db3863b4b7c4c
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.menu),
           onPressed: () {
+<<<<<<< HEAD
             _scaffoldKey.currentState?.openDrawer();
+=======
+            Scaffold.of(context).openDrawer(); // Opens the drawer
+>>>>>>> b0091a2a52994186a7f43ebb007db3863b4b7c4c
           },
         ),
         title: Center(
           child: Image.asset(
+<<<<<<< HEAD
             'assets/logo.png',
+=======
+            'assets/logo.png', // Your logo path here
+>>>>>>> b0091a2a52994186a7f43ebb007db3863b4b7c4c
             fit: BoxFit.contain,
             height: 40,
           ),
         ),
       ),
+<<<<<<< HEAD
       body: Container(
         color: Colors.lightGreen[100],
         child: Padding(
@@ -106,6 +118,9 @@ class ChallengePage extends StatelessWidget {
           title: Text(content),
         ),
       ],
+=======
+      body: const Center(child: Text('Challenge Page content')),
+>>>>>>> b0091a2a52994186a7f43ebb007db3863b4b7c4c
     );
   }
 }

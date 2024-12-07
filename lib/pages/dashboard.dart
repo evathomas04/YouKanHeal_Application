@@ -42,6 +42,7 @@ class _DashboardPageState extends State<DashboardPage> {
     },
   ];
 
+<<<<<<< HEAD
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -55,15 +56,33 @@ class _DashboardPageState extends State<DashboardPage> {
                 Scaffold.of(context).openDrawer();
               },
             );
+=======
+class DashboardPage extends StatelessWidget {
+  const DashboardPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.menu),
+          onPressed: () {
+            Scaffold.of(context).openDrawer(); // Opens the drawer
+>>>>>>> b0091a2a52994186a7f43ebb007db3863b4b7c4c
           },
         ),
         title: Center(
           child: Image.asset(
+<<<<<<< HEAD
             'assets/logo.png',
+=======
+            'assets/logo.png', // Your logo path here
+>>>>>>> b0091a2a52994186a7f43ebb007db3863b4b7c4c
             fit: BoxFit.contain,
             height: 40,
           ),
         ),
+<<<<<<< HEAD
         actions: <Widget>[
           IconButton(
             icon: const Icon(Icons.account_circle),
@@ -310,6 +329,10 @@ class _DashboardPageState extends State<DashboardPage> {
           ),
         ),
       ),
+=======
+      ),
+      body: const Center(child: Text('Dash Page content')),
+>>>>>>> b0091a2a52994186a7f43ebb007db3863b4b7c4c
     );
   }
 }
