@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="gcm_defaultSenderId" translatable="false">831323192062</string>
+    <string name="google_api_key" translatable="false">AIzaSyDutSVXkKEVPb2MAGYLhx5QXh1d712uY4U</string>
+    <string name="google_app_id" translatable="false">1:831323192062:android:3c489c7c38dc81f27043af</string>
+    <string name="google_crash_reporting_api_key" translatable="false">AIzaSyDutSVXkKEVPb2MAGYLhx5QXh1d712uY4U</string>
+    <string name="google_storage_bucket" translatable="false">youkanheal-mainproject.firebasestorage.app</string>
+    <string name="project_id" translatable="false">youkanheal-mainproject</string>
+</resources>

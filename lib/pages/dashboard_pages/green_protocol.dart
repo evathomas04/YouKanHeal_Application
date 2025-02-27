@@ -1,21 +1,166 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_database/firebase_database.dart';
+import 'charts/piechart_greenprot.dart';
+import 'package:youkanheal_mainproject/pages/dashboard_pages/charts/linechart_greenprot.dart';
 
-class GreenProtocol extends StatelessWidget {
+class GreenProtocol extends StatefulWidget {
   final String message;
 
   const GreenProtocol({super.key, required this.message});
 
   @override
+  _GreenProtocolState createState() => _GreenProtocolState();
+}
+
+class _GreenProtocolState extends State<GreenProtocol> {
+  final DatabaseReference _greenProtocolRef =
+  FirebaseDatabase.instance.ref('green_protocol_form');
+  List<double> greenProtocolCounts = List.filled(3, 0); // For the last 3 months
+  List<String> monthNames = [];
+  int totalParticipants = 0;
+  int numberOfEvents = 0;
+  int totalItemsAvoided = 0;
+
+  void initializeMonthNames() {
+    DateTime now = DateTime.now();
+    monthNames = List.generate(3, (index) {
+      DateTime monthDate = DateTime(now.year, now.month - index);
+      return getMonthName(monthDate.month);
+    }).reversed.toList();
+  }
+
+  // Convert month number to month name
+  String getMonthName(int month) {
+    switch (month) {
+      case 1:
+        return 'Jan';
+      case 2:
+        return 'Feb';
+      case 3:
+        return 'Mar';
+      case 4:
+        return 'Apr';
+      case 5:
+        return 'May';
+      case 6:
+        return 'Jun';
+      case 7:
+        return 'Jul';
+      case 8:
+        return 'Aug';
+      case 9:
+        return 'Sep';
+      case 10:
+        return 'Oct';
+      case 11:
+        return 'Nov';
+      case 12:
+        return 'Dec';
+      default:
+        return '';
+    }
+  }
+
+  /// Parse a date string in the format mm-dd-yyyy
+  DateTime? _parseDate(String? dateStr) {
+    if (dateStr == null) return null;
+    try {
+      List<String> parts = dateStr.split('-');
+      if (parts.length == 3) {
+        int month = int.parse(parts[0]);
+        int day = int.parse(parts[1]);
+        int year = int.parse(parts[2]);
+        return DateTime(year, month, day);
+      }
+    } catch (e) {
+      print("Error parsing date: $e");
+    }
+    return null;
+  }
+
+  void resetCounts() {
+    greenProtocolCounts.fillRange(0, greenProtocolCounts.length, 0);
+  }
+
+  void _initializeListeners() {
+    _greenProtocolRef.onValue.listen((DatabaseEvent event) {
+      if (event.snapshot.exists) {
+        Map<dynamic, dynamic> data =
+        event.snapshot.value as Map<dynamic, dynamic>;
+
+        resetCounts();
+        DateTime now = DateTime.now();
+
+        // Process data for line chart counts
+        for (var entry in data.entries) {
+          String? dateStr = entry.value['event_date'];
+          DateTime? eventDate = _parseDate(dateStr);
+          if (eventDate != null) {
+            int monthIndex = (now.year - eventDate.year) * 12 +
+                now.month -
+                eventDate.month;
+
+            if (monthIndex >= 0 && monthIndex < 3) {
+              greenProtocolCounts[2 - monthIndex]++;
+            }
+          }
+        }
+
+        // Process data for stats (total events, participants, and items avoided)
+        int participants = 0;
+        int itemsAvoided = 0;
+
+        for (var entry in data.entries) {
+          int participantsForEvent = 0;
+
+          if (entry.value['number_of_participants'] is int) {
+            participantsForEvent = entry.value['number_of_participants'];
+          } else if (entry.value['number_of_participants'] is String) {
+            participantsForEvent =
+                int.tryParse(entry.value['number_of_participants']) ?? 0;
+          }
+
+          participants += participantsForEvent;
+
+          List<String> itemsUsed = [];
+          if (entry.value['items_used'] is List) {
+            itemsUsed = List<String>.from(entry.value['items_used']);
+          }
+
+          itemsAvoided += participantsForEvent * itemsUsed.length;
+        }
+
+        setState(() {
+          numberOfEvents = data.length;
+          totalParticipants = participants;
+          totalItemsAvoided = itemsAvoided;
+        });
+      } else {
+        print('No Green Protocol data available.');
+      }
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    initializeMonthNames();
+    _initializeListeners();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    double screenWidth = MediaQuery.of(context).size.width;
+    double screenHeight = MediaQuery.of(context).size.height;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Green Protocol'),
-        backgroundColor: const Color.fromARGB(
-            255, 3, 98, 18), // Set the background color of the AppBar
-        titleTextStyle: const TextStyle(
-          color: Colors.white, // Set the text color of the AppBar title
-          fontSize: 20, // You can also change the font size here
-          fontWeight: FontWeight.bold, // Adjust the font weight if needed
+        backgroundColor: const Color.fromARGB(255, 3, 98, 18),
+        titleTextStyle: TextStyle(
+          color: Colors.white,
+          fontSize: screenWidth * 0.05,
+          fontWeight: FontWeight.bold,
         ),
       ),
       body: Padding(
@@ -24,107 +169,33 @@ class GreenProtocol extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Institution Dropdown
-              DropdownButtonFormField<String>(
-                decoration: const InputDecoration(
-                  labelText: 'Select Institution',
-                  border: OutlineInputBorder(),
-                ),
-                items: <String>[
-                  "St. Teresa's college",
-                  'ABC College',
-                  'Chinmaya',
-                  'Institution 4',
-                  'Institution 5'
-                ].map((String value) {
-                  return DropdownMenuItem<String>(
-                    value: value,
-                    child: Text(value),
-                  );
-                }).toList(),
-                onChanged: (_) {},
-              ),
-              const SizedBox(height: 20),
-              // Month Dropdown
-              DropdownButtonFormField<String>(
-                decoration: const InputDecoration(
-                  labelText: 'Select Year',
-                  border: OutlineInputBorder(),
-                ),
-                items: <String>[
-                  '2022',
-                  '2023',
-                  '2024',
-                ].map((String value) {
-                  return DropdownMenuItem<String>(
-                    value: value,
-                    child: Text(value),
-                  );
-                }).toList(),
-                onChanged: (_) {},
-              ),
-
-              const SizedBox(height: 20),
-              // Month Dropdown
-              DropdownButtonFormField<String>(
-                decoration: const InputDecoration(
-                  labelText: 'Select Month',
-                  border: OutlineInputBorder(),
-                ),
-                items: <String>[
-                  'January',
-                  'February',
-                  'March',
-                  'April',
-                  'May',
-                  'June',
-                  'July',
-                  'August',
-                  'September',
-                  'October',
-                  'November',
-                  'December'
-                ].map((String value) {
-                  return DropdownMenuItem<String>(
-                    value: value,
-                    child: Text(value),
-                  );
-                }).toList(),
-                onChanged: (_) {},
-              ),
-
-              const SizedBox(height: 32),
-// Total Participants Section with Pie Chart
+              SizedBox(height: screenHeight * 0.02),
               Container(
                 decoration: BoxDecoration(
-                  color:
-                  const Color.fromARGB(255, 3, 98, 18), // Background color
-                  borderRadius: BorderRadius.circular(15.0), // Rounded corners
+                  color: const Color.fromARGB(255, 3, 98, 18),
+                  borderRadius: BorderRadius.circular(15.0),
                 ),
-                width: 375, // Set a fixed width (adjust as needed)
-                padding:
-                const EdgeInsets.all(16), // Padding inside the container
-                child: const Row(
+                width: screenWidth * 1,
+                padding: EdgeInsets.all(screenWidth * 0.03),
+                child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    // Total Participants count
                     Column(
-                      crossAxisAlignment:
-                      CrossAxisAlignment.center, // Aligns text to the start
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         Text(
                           'Total Participants',
                           style: TextStyle(
-                            fontSize: 18,
+                            fontSize: screenWidth * 0.05,
                             color: Colors.white,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                        SizedBox(height: 8),
+                        SizedBox(height: screenHeight * 0.01),
                         Text(
-                          '302', // Replace with dynamic data
+                          '$totalParticipants',
                           style: TextStyle(
-                            fontSize: 36,
+                            fontSize: screenWidth * 0.1,
                             color: Colors.white,
                             fontWeight: FontWeight.bold,
                           ),
@@ -134,105 +205,93 @@ class GreenProtocol extends StatelessWidget {
                   ],
                 ),
               ),
-              //Pie Chart
-              const SizedBox(height: 20),
+              SizedBox(height: screenHeight * 0.015),
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 2.0),
-                child: Container(
-                  width: 375,
-                  height: 200,
-                  decoration: BoxDecoration(
-                    color: const Color.fromARGB(255, 228, 229, 229),
-                    borderRadius: BorderRadius.circular(15.0),
-                  ),
+                padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.015),
+                child: const Center(
+                  child: MyPieChart(),
                 ),
               ),
-              const SizedBox(height: 20),
-              // Stat Cards Section
+              SizedBox(height: screenHeight * 0.02),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  // Graph (Placeholder for now)
                   Expanded(
                     child: Container(
-                      height: 210,
-                      margin: const EdgeInsets.only(right: 8),
+                      height: screenHeight * 0.26,
+                      margin: EdgeInsets.only(right: screenWidth * 0.015),
                       decoration: BoxDecoration(
                         color: const Color.fromARGB(255, 228, 229, 229),
                         borderRadius: BorderRadius.circular(10),
                       ),
-                      child: const Center(
-                        child: Icon(Icons.show_chart,
-                            size: 60), // Placeholder graph
+                      child: LineChartWidget(
+                        greenProtocolCounts: greenProtocolCounts,
+                        monthNames: monthNames,
                       ),
                     ),
                   ),
-
-                  // Stat Cards (Bring your own bag, etc.)
                   Expanded(
                     child: Column(
                       children: [
-                        // Bring your own bag card
                         Container(
-                          height: 100,
-                          margin: const EdgeInsets.only(bottom: 8),
+                          height: screenHeight * 0.12,
+                          margin: EdgeInsets.only(bottom: screenHeight * 0.01),
                           decoration: BoxDecoration(
                             color: const Color.fromARGB(255, 48, 171, 68),
                             borderRadius: BorderRadius.circular(10),
                           ),
-                          child: const Center(
+                          child: Center(
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment
-                                  .center, // Center horizontally
+                              crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
                                 Text(
-                                  'Willing to be Part of this Challenge', // First text
+                                  'Total Number of Events',
                                   style: TextStyle(
-                                      fontSize: 16, color: Colors.white),
+                                    fontSize: screenWidth * 0.035,
+                                    color: Colors.white,
+                                  ),
                                 ),
-                                SizedBox(
-                                    height: 8), // Spacing between the texts
+                                SizedBox(height: screenWidth * 0.01),
                                 Text(
-                                  '400', // Second text
+                                  '$numberOfEvents',
                                   style: TextStyle(
-                                      fontSize: 24,
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.bold),
+                                    fontSize: screenWidth * 0.06,
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                  ),
                                 ),
                               ],
                             ),
                           ),
                         ),
-
-                        // Plastic bags reduced card
                         Container(
-                          height: 100,
-                          margin: const EdgeInsets.only(bottom: 8),
+                          height: screenHeight * 0.12,
+                          margin: EdgeInsets.only(bottom: screenHeight * 0.01),
                           decoration: BoxDecoration(
                             color: const Color.fromARGB(255, 48, 171, 68),
                             borderRadius: BorderRadius.circular(10),
                           ),
-                          child: const Center(
+                          child: Center(
                             child: Column(
-                              mainAxisAlignment:
-                              MainAxisAlignment.center, // Center vertically
-                              crossAxisAlignment: CrossAxisAlignment
-                                  .center, // Center horizontally
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
                                 Text(
-                                  'Total Number of Plastic Cups Reduced', // First text
+                                  'Total Number of Disposable Items Avoided',
                                   style: TextStyle(
-                                      fontSize: 15, color: Colors.white),
+                                    fontSize: screenWidth * 0.035,
+                                    color: Colors.white,
+                                  ),
                                 ),
-                                SizedBox(
-                                    height: 8), // Spacing between the texts
+                                SizedBox(height: screenWidth * 0.01),
                                 Text(
-                                  '320', // Second text
+                                  '$totalItemsAvoided',
                                   style: TextStyle(
-                                      fontSize: 24,
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.bold),
+                                    fontSize: screenWidth * 0.06,
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                  ),
                                 ),
                               ],
                             ),
@@ -249,4 +308,5 @@ class GreenProtocol extends StatelessWidget {
       ),
     );
   }
+
 }

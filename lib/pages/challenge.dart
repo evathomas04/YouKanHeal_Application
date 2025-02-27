@@ -6,69 +6,60 @@ class ChallengePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+    double screenWidth = MediaQuery.of(context).size.width;
+    double screenHeight = MediaQuery.of(context).size.height;
+    final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
 
     return Scaffold(
-<<<<<<< HEAD
-      key: _scaffoldKey,
-      drawer: const AppDrawer(),
-=======
->>>>>>> b0091a2a52994186a7f43ebb007db3863b4b7c4c
+      key: scaffoldKey,
+      drawer: AppDrawer(),
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.menu),
           onPressed: () {
-<<<<<<< HEAD
-            _scaffoldKey.currentState?.openDrawer();
-=======
-            Scaffold.of(context).openDrawer(); // Opens the drawer
->>>>>>> b0091a2a52994186a7f43ebb007db3863b4b7c4c
+            scaffoldKey.currentState?.openDrawer();
           },
         ),
         title: Center(
           child: Image.asset(
-<<<<<<< HEAD
             'assets/logo.png',
-=======
-            'assets/logo.png', // Your logo path here
->>>>>>> b0091a2a52994186a7f43ebb007db3863b4b7c4c
             fit: BoxFit.contain,
-            height: 40,
+            height: screenHeight * 0.05, // Responsive height
           ),
         ),
       ),
-<<<<<<< HEAD
       body: Container(
         color: Colors.lightGreen[100],
         child: Padding(
-          padding: const EdgeInsets.all(14.0),
+          padding: EdgeInsets.all(screenWidth * 0.04), // Responsive padding
           child: ListView(
             children: [
               Card(
                 elevation: 5,
                 color: Colors.white,
                 child: Padding(
-                  padding: const EdgeInsets.all(16.0),
+                  padding: EdgeInsets.all(screenWidth * 0.05), // Responsive padding
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
+                      Text(
                         'Challenges',
                         style: TextStyle(
-                          fontSize: 24,
+                          fontSize: screenWidth * 0.06, // Responsive font size
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      const SizedBox(height: 16),
-                      const Text(
+                      SizedBox(height: screenHeight * 0.02), // Responsive spacing
+                      Text(
                         'Below are the different challenges under the YouKAN-HEAL project:',
-                        style: TextStyle(fontSize: 16),
+                        style: TextStyle(fontSize: screenWidth * 0.045), // Responsive font size
                       ),
                     ],
                   ),
                 ),
               ),
               _buildExpansionTile(
+                context,
                 'Green Protocol',
                 'The Green Protocol is one of the challenges in the YOUKAN HEAL KOCHI project. '
                     'This initiative was taken to reduce all types of disposals including plastic, paper, etc in our daily life. '
@@ -77,23 +68,28 @@ class ChallengePage extends StatelessWidget {
                     '• Inside college - Ensuring environmentally friendly products are used at college functions.',
               ),
               _buildExpansionTile(
+                context,
                 'BYC (Bring your Cup)',
                 'Encouraging the use of reusable cups/plates/lunchboxes during events.',
               ),
               _buildExpansionTile(
+                context,
                 'Litter-free challenge',
                 'A challenge to clean the surroundings to help reduce mosquitoes and pollution.',
               ),
               _buildExpansionTile(
+                context,
                 'Ban the bag challenge',
                 'Switching from non-biodegradable plastic bags to biodegradable bags. '
                     'Encouraging reusable carry bags for shopping to reduce plastic waste.',
               ),
               _buildExpansionTile(
+                context,
                 'Sweet Repeats',
                 'A challenge to exchange or donate unused, unspoiled items to others, promoting a barter or swap system.',
               ),
               _buildExpansionTile(
+                context,
                 'Sustainable Menstrual Practices',
                 'Encouraging the use of reusable cloth pads instead of disposable ones, reducing sanitary waste.',
               ),
@@ -104,23 +100,28 @@ class ChallengePage extends StatelessWidget {
     );
   }
 
-  Widget _buildExpansionTile(String title, String content) {
+  Widget _buildExpansionTile(BuildContext context, String title, String content) {
+    double screenWidth = MediaQuery.of(context).size.width;
+
     return ExpansionTile(
       title: Text(
         title,
-        style: const TextStyle(
+        style: TextStyle(
+          fontSize: screenWidth * 0.045, // Responsive font size
           fontWeight: FontWeight.bold,
         ),
       ),
       backgroundColor: Colors.white,
       children: [
-        ListTile(
-          title: Text(content),
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.05), // Responsive padding
+          child: Text(
+            content,
+            style: TextStyle(fontSize: screenWidth * 0.04), // Responsive font size
+          ),
         ),
+        SizedBox(height: screenWidth * 0.03), // Responsive spacing
       ],
-=======
-      body: const Center(child: Text('Challenge Page content')),
->>>>>>> b0091a2a52994186a7f43ebb007db3863b4b7c4c
     );
   }
 }

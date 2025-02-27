@@ -1,4 +1,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Add permissions here, inside the <manifest> tag but outside the <application> tag -->
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+
+
+
     <application
         android:label="youkanheal_mainproject"
         android:name="${applicationName}"
